@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест на оттенки</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 30px;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        /* Прогресс-бар */
+        .progress-bar-wrap {
+            width: 80%;
+            max-width: 700px;
+            background: #3a3a3a;
+            border-radius: 20px;
+            height: 14px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #8bc34a;
+            border-radius: 20px;
+            transition: width 0.4s ease;
+        }
+        .progress-text {
+            color: #bbb;
+            font-size: 0.9rem;
+            font-family: 'Segoe UI', sans-serif;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* Блок одного цвета — теперь внутри отображается название */
+        .color-single {
+            width: 70%;
+            height: 350px;
+            border: none;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            position: relative;
+        }
+
+        /* Название на цвете */
+        .color-label-on {
+            font-family: 'Georgia', serif;
+            font-weight: 400;
+            font-size: 2.8rem;
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.4);
+            padding: 10px 30px;
+            border-radius: 50px;
+            letter-spacing: 1px;
+            backdrop-filter: blur(2px);
+            text-align: center;
+        }
+
+        .color-compare {
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .color-compare-item {
+            flex: 1 1 180px;
+            min-width: 140px;
+            height: 240px;
+            border: none;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 20px;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .color-compare-item .color-name {
+            font-family: 'Georgia', serif;
+            font-weight: 400;
+            font-size: 1.2rem;
+            color: #fff;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 16px;
+            border-radius: 30px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Кнопка */
+        .btn {
+            padding: 12px 40px;
+            font-size: 1.6rem;
+            font-family: 'Georgia', serif;
+            font-weight: 400;
+            color: #222;
+            background: #d5d5d5;
+            border: 1px solid #999;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.25s;
+            letter-spacing: 0.3px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            text-align: center;
+            display: inline-block;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            background: #c5c5c5;
+            transform: scale(1.02);
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .progress-step {
+            color: #aaa;
+            font-size: 1.0rem;
+            margin-top: 20px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* ===== Финальная матрица ===== */
+        .final-matrix {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 10px;
+        }
+
+        .final-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .final-block {
+            flex: 1 1 0;          /* равномерное распределение ширины */
+            min-width: 200px;     /* минимальная ширина, чтобы не сжимались слишком */
+            display: flex;
+            justify-content: space-around;  /* равные отступы между элементами */
+            align-items: center;
+            background: rgba(255,255,255,0.08);
+            padding: 18px 15px;
+            border-radius: 20px;
+            border: 1px solid #555;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            gap: 10px;
+        }
+
+        .final-color-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1 1 0;          /* все элементы равной ширины */
+        }
+
+        .final-color {
+            width: 100%;           /* занимает всю ширину .final-color-item */
+            aspect-ratio: 1 / 1;   /* квадрат */
+            max-width: 110px;      /* ограничим максимальный размер */
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .final-name {
+            color: #eee;
+            font-size: 0.95rem;
+            font-family: 'Georgia', serif;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .final-title {
+            color: #eee;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            font-family: 'Georgia', serif;
+        }
+
+        @media (max-width: 750px) {
+            .color-single {
+                width: 90%;
+                height: 250px;
+            }
+            .color-compare-item {
+                min-width: 100px;
+                height: 170px;
+            }
+            .color-label-on {
+                font-size: 2.0rem;
+                padding: 6px 18px;
+            }
+            .btn {
+                font-size: 1.3rem;
+                padding: 10px 25px;
+            }
+            .final-block {
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 12px 10px;
+                min-width: 140px;
+            }
+            .final-color {
+                max-width: 80px;
+            }
+            .final-row {
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app"></div>
+
+    <script>
+        // ------------------------------------------------------------
+        // 8 блоков
+        // ------------------------------------------------------------
+        const blocks = [{
+            colors: [
+                { hex: '#4B0082', name: 'Индиго' },
+                { hex: '#800080', name: 'Фиолетовый' },
+                { hex: '#DDA0DD', name: 'Сиреневый' }
+            ]
+        }, {
+            colors: [
+                { hex: '#FF00FF', name: 'Фуксия' },
+                { hex: '#9B59B6', name: 'Лиловый' },
+                { hex: '#FF69B4', name: 'Розовый' }
+            ]
+        }, {
+            colors: [
+                { hex: '#808000', name: 'Оливковый' },
+                { hex: '#BDB76B', name: 'Хаки' },
+                { hex: '#DAA520', name: 'Горчичный' }
+            ]
+        }, {
+            colors: [
+                { hex: '#F5F5DC', name: 'Бежевый' },
+                { hex: '#FFFDD0', name: 'Кремовый' },
+                { hex: '#FFDAB9', name: 'Персиковый' }
+            ]
+        }, {
+            colors: [
+                { hex: '#DC143C', name: 'Малиновый' },
+                { hex: '#FF2400', name: 'Алый' },
+                { hex: '#FF0000', name: 'Красный' }
+            ]
+        }, {
+            colors: [
+                { hex: '#50C878', name: 'Изумрудный' },
+                { hex: '#0ABAB5', name: 'Тиффани' },
+                { hex: '#98FF98', name: 'Мятный' }
+            ]
+        }, {
+            colors: [
+                { hex: '#FFBF00', name: 'Янтарный' },
+                { hex: '#FF8C00', name: 'Оранжевый' },
+                { hex: '#FF7F50', name: 'Коралловый' }
+            ]
+        }, {
+            colors: [
+                { hex: '#00BFFF', name: 'Голубой' },
+                { hex: '#007FFF', name: 'Лазурный' },
+                { hex: '#120A8F', name: 'Ультрамарин' }
+            ]
+        }];
+
+        // ------------------------------------------------------------
+        let currentBlock = 0;
+        let step = 0;
+        let revealed = false;
+        const app = document.getElementById('app');
+
+        function playClickSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = 880;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
+
+        function getProgress() {
+            let totalSteps = blocks.length * 4;
+            let stepIndex = currentBlock * 4 + step;
+            let pct = (stepIndex / totalSteps) * 100;
+            return Math.min(pct, 100);
+        }
+
+        function render() {
+            if (currentBlock >= blocks.length) {
+                showFinalGrid();
+                return;
+            }
+
+            const block = blocks[currentBlock];
+            const colors = block.colors;
+
+            let progressHtml = `
+                <div class="progress-text">Блок ${currentBlock + 1} из ${blocks.length}</div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: ${getProgress()}%;"></div>
+                </div>
+            `;
+
+            if (step < 3) {
+                const colorObj = colors[step];
+                const colorHex = colorObj.hex;
+                const colorName = colorObj.name;
+
+                // Название появляется на цвете, если revealed
+                let labelHtml = '';
+                if (revealed) {
+                    labelHtml = `<div class="color-label-on">${colorName}</div>`;
+                }
+
+                let buttonText = revealed ? 'Далее →' : 'Узнать цвет';
+                let buttonAction = revealed ? 'nextColor' : 'revealColor';
+
+                app.innerHTML = `
+                    ${progressHtml}
+                    <div class="color-single" style="background-color: ${colorHex};">
+                        ${labelHtml}
+                    </div>
+                    <button class="btn" data-action="${buttonAction}">${buttonText}</button>
+                    <div class="progress-step">Цвет ${step + 1} из 3</div>
+                `;
+
+                const btn = document.querySelector('.btn');
+                btn.addEventListener('click', handleButtonClick);
+
+            } else {
+                let itemsHtml = colors.map(c => `
+                    <div class="color-compare-item" style="background-color: ${c.hex};">
+                        <div class="color-name">${c.name}</div>
+                    </div>
+                `).join('');
+
+                const isLastBlock = (currentBlock === blocks.length - 1);
+                const buttonText = isLastBlock ? 'Закончить' : 'Далее →';
+                const buttonAction = isLastBlock ? 'finish' : 'nextBlock';
+
+                app.innerHTML = `
+                    ${progressHtml}
+                    <div class="color-compare">${itemsHtml}</div>
+                    <button class="btn" data-action="${buttonAction}">${buttonText}</button>
+                    <div class="progress-step">Сравнение</div>
+                `;
+
+                const btn = document.querySelector('.btn');
+                btn.addEventListener('click', handleButtonClick);
+            }
+        }
+
+        function showFinalGrid() {
+            let matrixHtml = '';
+            for (let i = 0; i < blocks.length; i += 2) {
+                let rowHtml = '<div class="final-row">';
+                let block1 = blocks[i];
+                rowHtml += buildBlockHtml(block1);
+                if (i + 1 < blocks.length) {
+                    let block2 = blocks[i + 1];
+                    rowHtml += buildBlockHtml(block2);
+                }
+                rowHtml += '</div>';
+                matrixHtml += rowHtml;
+            }
+
+            app.innerHTML = `
+                <div class="progress-text">Тест завершён</div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 100%;"></div>
+                </div>
+                <div class="final-title">Все изученные цвета</div>
+                <div class="final-matrix">${matrixHtml}</div>
+            `;
+        }
+
+        function buildBlockHtml(block) {
+            let html = '<div class="final-block">';
+            block.colors.forEach(c => {
+                html += `
+                    <div class="final-color-item">
+                        <div class="final-color" style="background-color: ${c.hex};"></div>
+                        <div class="final-name">${c.name}</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function handleButtonClick(e) {
+            const action = e.currentTarget.dataset.action;
+
+            switch (action) {
+                case 'revealColor':
+                    revealed = true;
+                    render();
+                    break;
+
+                case 'nextColor':
+                    playClickSound();
+                    if (step < 2) {
+                        step++;
+                        revealed = false;
+                        render();
+                    } else {
+                        step = 3;
+                        revealed = false;
+                        render();
+                    }
+                    break;
+
+                case 'nextBlock':
+                    playClickSound();
+                    currentBlock++;
+                    step = 0;
+                    revealed = false;
+                    render();
+                    break;
+
+                case 'finish':
+                    playClickSound();
+                    currentBlock = blocks.length;
+                    render();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
