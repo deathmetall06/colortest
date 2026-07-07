@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <script type="text/javascript">
-    // 1. Подключаем библиотеку VK Bridge
-    window.addEventListener('load', function () {
-        // 2. Ждем, пока загрузится страница, и отправляем сигнал
-        if (window.VKWebAppInit) {
-            window.VKWebAppInit();
-        } else {
-            // Если библиотека еще не загрузилась, можно попробовать еще раз
-            console.warn('VK Bridge not loaded yet, retrying...');
-            // Для простоты можно просто вызвать позже или использовать внешнюю библиотеку
-        }
-    });
-
-    // Альтернативный способ (более надежный):
-    // Подключаем VK Bridge через CDN
-    (function() {
-        var script = document.createElement('script');
-        script.src = 'https://vk.com/js/api/xd_connection.js?2';
-        script.onload = function() {
-            // После загрузки библиотеки вызываем инициализацию
-            if (window.VKWebAppInit) {
-                window.VKWebAppInit();
-            }
-        };
-        document.head.appendChild(script);
-    })();
-</script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Тест на оттенки</title>
+
+    <!-- Инициализация VK Mini App -->
+    <script type="text/javascript">
+        (function() {
+            // Функция инициализации
+            function initVK() {
+                if (window.VKWebAppInit) {
+                    window.VKWebAppInit();
+                    console.log('VK Mini App initialized');
+                } else {
+                    console.warn('VK Bridge not available, running in standalone mode');
+                }
+            }
+
+            // Проверяем, загружена ли уже библиотека
+            if (window.VKWebAppInit) {
+                initVK();
+            } else {
+                // Подгружаем библиотеку VK Bridge
+                var script = document.createElement('script');
+                script.src = 'https://vk.com/js/api/xd_connection.js?2';
+                script.onload = initVK;
+                script.onerror = function() {
+                    console.warn('Failed to load VK Bridge, running standalone');
+                };
+                document.head.appendChild(script);
+            }
+        })();
+    </script>
+
     <style>
+        /* ----- Общие стили ----- */
         * {
             margin: 0;
             padding: 0;
@@ -45,31 +49,31 @@
             justify-content: center;
             align-items: center;
             font-family: 'Georgia', 'Times New Roman', serif;
-            padding: 20px;
+            padding: 15px;
         }
 
         .container {
             width: 100%;
             max-width: 1100px;
-            min-height: 600px;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: rgba(255,255,255,0.05);
             border-radius: 30px;
-            padding: 30px 20px;
+            padding: 20px 15px;
             position: relative;
         }
 
-        /* Прогресс-бар */
+        /* ----- Прогресс-бар ----- */
         .progress-bar-wrap {
             width: 80%;
             max-width: 700px;
             background: #3a3a3a;
             border-radius: 20px;
-            height: 14px;
-            margin-bottom: 10px;
+            height: 12px;
+            margin-bottom: 8px;
             overflow: hidden;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
         }
@@ -82,81 +86,81 @@
         }
         .progress-text {
             color: #bbb;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-family: 'Segoe UI', sans-serif;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
         }
 
-        /* Блок одного цвета — теперь внутри отображается название */
+        /* ----- Блок одного цвета ----- */
         .color-single {
             width: 70%;
-            height: 350px;
+            height: 320px;
             border: none;
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             box-shadow: 0 6px 16px rgba(0,0,0,0.4);
             position: relative;
+            transition: background 0.2s;
         }
 
-        /* Название на цвете */
         .color-label-on {
             font-family: 'Georgia', serif;
             font-weight: 400;
-            font-size: 2.8rem;
+            font-size: 2.6rem;
             color: #fff;
             text-shadow: 0 2px 12px rgba(0,0,0,0.9);
-            background: rgba(0,0,0,0.4);
-            padding: 10px 30px;
+            background: rgba(0,0,0,0.45);
+            padding: 8px 24px;
             border-radius: 50px;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             backdrop-filter: blur(2px);
             text-align: center;
         }
 
+        /* ----- Сравнение трёх цветов ----- */
         .color-compare {
             display: flex;
-            gap: 25px;
+            gap: 20px;
             width: 100%;
             justify-content: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .color-compare-item {
-            flex: 1 1 180px;
-            min-width: 140px;
-            height: 240px;
+            flex: 1 1 160px;
+            min-width: 120px;
+            height: 210px;
             border: none;
             border-radius: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
-            padding-bottom: 20px;
-            transition: background 0.2s;
+            padding-bottom: 16px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: background 0.2s;
         }
 
         .color-compare-item .color-name {
             font-family: 'Georgia', serif;
             font-weight: 400;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #fff;
-            background: rgba(0,0,0,0.5);
-            padding: 4px 16px;
+            background: rgba(0,0,0,0.55);
+            padding: 4px 14px;
             border-radius: 30px;
             letter-spacing: 0.3px;
         }
 
-        /* Кнопка */
+        /* ----- Кнопка ----- */
         .btn {
             padding: 12px 40px;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-family: 'Georgia', serif;
             font-weight: 400;
             color: #222;
@@ -171,6 +175,7 @@
             display: inline-block;
             line-height: 1.2;
             white-space: nowrap;
+            touch-action: manipulation;
         }
         .btn:hover {
             background: #c5c5c5;
@@ -182,59 +187,60 @@
 
         .progress-step {
             color: #aaa;
-            font-size: 1.0rem;
-            margin-top: 20px;
+            font-size: 0.95rem;
+            margin-top: 18px;
             font-family: 'Segoe UI', sans-serif;
         }
 
-        /* ===== Финальная матрица ===== */
+        /* ----- Финальная матрица ----- */
         .final-matrix {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
             margin-top: 10px;
         }
 
         .final-row {
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 30px;
+            flex-wrap: wrap;
         }
 
         .final-block {
-            flex: 1 1 0;          /* равномерное распределение ширины */
-            min-width: 200px;     /* минимальная ширина, чтобы не сжимались слишком */
+            flex: 1 1 0;
+            min-width: 180px;
             display: flex;
-            justify-content: space-around;  /* равные отступы между элементами */
+            justify-content: space-around;
             align-items: center;
             background: rgba(255,255,255,0.08);
-            padding: 18px 15px;
+            padding: 14px 12px;
             border-radius: 20px;
             border: 1px solid #555;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            gap: 10px;
+            gap: 8px;
         }
 
         .final-color-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-            flex: 1 1 0;          /* все элементы равной ширины */
+            gap: 4px;
+            flex: 1 1 0;
         }
 
         .final-color {
-            width: 100%;           /* занимает всю ширину .final-color-item */
-            aspect-ratio: 1 / 1;   /* квадрат */
-            max-width: 110px;      /* ограничим максимальный размер */
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 100px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .final-name {
             color: #eee;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-family: 'Georgia', serif;
             font-weight: 400;
             text-align: center;
@@ -242,40 +248,80 @@
 
         .final-title {
             color: #eee;
-            font-size: 2.2rem;
-            margin-bottom: 15px;
+            font-size: 2.0rem;
+            margin-bottom: 12px;
             font-family: 'Georgia', serif;
         }
 
+        /* ----- Адаптация для мобильных устройств (VK чаще открывается с телефона) ----- */
         @media (max-width: 750px) {
+            body { padding: 10px; }
+            .container { padding: 15px 10px; }
             .color-single {
                 width: 90%;
                 height: 250px;
-            }
-            .color-compare-item {
-                min-width: 100px;
-                height: 170px;
             }
             .color-label-on {
                 font-size: 2.0rem;
                 padding: 6px 18px;
             }
+            .color-compare-item {
+                min-width: 90px;
+                height: 160px;
+                flex: 1 1 120px;
+            }
+            .color-compare-item .color-name {
+                font-size: 0.95rem;
+                padding: 3px 10px;
+            }
             .btn {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
                 padding: 10px 25px;
             }
             .final-block {
                 flex-wrap: wrap;
                 justify-content: center;
-                padding: 12px 10px;
-                min-width: 140px;
+                padding: 10px 8px;
+                min-width: 120px;
+                flex: 1 1 100%;
             }
             .final-color {
-                max-width: 80px;
+                max-width: 70px;
             }
             .final-row {
-                gap: 20px;
-                flex-wrap: wrap;
+                gap: 15px;
+            }
+            .final-title {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .color-single {
+                height: 200px;
+            }
+            .color-label-on {
+                font-size: 1.6rem;
+                padding: 4px 14px;
+            }
+            .color-compare-item {
+                height: 130px;
+                min-width: 70px;
+                flex: 1 1 80px;
+            }
+            .color-compare-item .color-name {
+                font-size: 0.8rem;
+                padding: 2px 8px;
+            }
+            .btn {
+                font-size: 1.0rem;
+                padding: 8px 20px;
+            }
+            .final-color {
+                max-width: 55px;
+            }
+            .final-name {
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -285,7 +331,7 @@
 
     <script>
         // ------------------------------------------------------------
-        // 8 блоков
+        // ДАННЫЕ ТЕСТА: 8 блоков по 3 цвета
         // ------------------------------------------------------------
         const blocks = [{
             colors: [
@@ -338,11 +384,17 @@
         }];
 
         // ------------------------------------------------------------
+        // СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+        // ------------------------------------------------------------
         let currentBlock = 0;
-        let step = 0;
+        let step = 0;          // 0,1,2 – показ отдельных цветов, 3 – сравнение
         let revealed = false;
         const app = document.getElementById('app');
 
+        // ------------------------------------------------------------
+        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ------------------------------------------------------------
+        // Звук (короткий сигнал при переходе) — работает только после жеста пользователя
         function playClickSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -352,20 +404,26 @@
                 gain.connect(audioCtx.destination);
                 osc.frequency.value = 880;
                 osc.type = 'sine';
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
                 osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.15);
-            } catch(e) {}
+                osc.stop(audioCtx.currentTime + 0.12);
+            } catch(e) {
+                // Если звук не поддерживается, просто игнорируем
+            }
         }
 
+        // Прогресс (в процентах)
         function getProgress() {
-            let totalSteps = blocks.length * 4;
-            let stepIndex = currentBlock * 4 + step;
+            const totalSteps = blocks.length * 4;
+            const stepIndex = currentBlock * 4 + step;
             let pct = (stepIndex / totalSteps) * 100;
             return Math.min(pct, 100);
         }
 
+        // ------------------------------------------------------------
+        // ОТРИСОВКА
+        // ------------------------------------------------------------
         function render() {
             if (currentBlock >= blocks.length) {
                 showFinalGrid();
@@ -375,7 +433,7 @@
             const block = blocks[currentBlock];
             const colors = block.colors;
 
-            let progressHtml = `
+            const progressHtml = `
                 <div class="progress-text">Блок ${currentBlock + 1} из ${blocks.length}</div>
                 <div class="progress-bar-wrap">
                     <div class="progress-bar-fill" style="width: ${getProgress()}%;"></div>
@@ -383,18 +441,18 @@
             `;
 
             if (step < 3) {
+                // ----- Одиночный цвет -----
                 const colorObj = colors[step];
                 const colorHex = colorObj.hex;
                 const colorName = colorObj.name;
 
-                // Название появляется на цвете, если revealed
                 let labelHtml = '';
                 if (revealed) {
                     labelHtml = `<div class="color-label-on">${colorName}</div>`;
                 }
 
-                let buttonText = revealed ? 'Далее →' : 'Узнать цвет';
-                let buttonAction = revealed ? 'nextColor' : 'revealColor';
+                const buttonText = revealed ? 'Далее →' : 'Узнать цвет';
+                const buttonAction = revealed ? 'nextColor' : 'revealColor';
 
                 app.innerHTML = `
                     ${progressHtml}
@@ -409,7 +467,8 @@
                 btn.addEventListener('click', handleButtonClick);
 
             } else {
-                let itemsHtml = colors.map(c => `
+                // ----- Сравнение трёх цветов -----
+                const itemsHtml = colors.map(c => `
                     <div class="color-compare-item" style="background-color: ${c.hex};">
                         <div class="color-name">${c.name}</div>
                     </div>
@@ -431,15 +490,14 @@
             }
         }
 
+        // Финальная матрица
         function showFinalGrid() {
             let matrixHtml = '';
             for (let i = 0; i < blocks.length; i += 2) {
                 let rowHtml = '<div class="final-row">';
-                let block1 = blocks[i];
-                rowHtml += buildBlockHtml(block1);
+                rowHtml += buildBlockHtml(blocks[i]);
                 if (i + 1 < blocks.length) {
-                    let block2 = blocks[i + 1];
-                    rowHtml += buildBlockHtml(block2);
+                    rowHtml += buildBlockHtml(blocks[i + 1]);
                 }
                 rowHtml += '</div>';
                 matrixHtml += rowHtml;
@@ -469,6 +527,9 @@
             return html;
         }
 
+        // ------------------------------------------------------------
+        // ОБРАБОТЧИКИ СОБЫТИЙ
+        // ------------------------------------------------------------
         function handleButtonClick(e) {
             const action = e.currentTarget.dataset.action;
 
@@ -510,6 +571,9 @@
             }
         }
 
+        // ------------------------------------------------------------
+        // ЗАПУСК
+        // ------------------------------------------------------------
         render();
     </script>
 </body>
