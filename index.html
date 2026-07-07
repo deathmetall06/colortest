@@ -1,6 +1,33 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <script type="text/javascript">
+    // 1. Подключаем библиотеку VK Bridge
+    window.addEventListener('load', function () {
+        // 2. Ждем, пока загрузится страница, и отправляем сигнал
+        if (window.VKWebAppInit) {
+            window.VKWebAppInit();
+        } else {
+            // Если библиотека еще не загрузилась, можно попробовать еще раз
+            console.warn('VK Bridge not loaded yet, retrying...');
+            // Для простоты можно просто вызвать позже или использовать внешнюю библиотеку
+        }
+    });
+
+    // Альтернативный способ (более надежный):
+    // Подключаем VK Bridge через CDN
+    (function() {
+        var script = document.createElement('script');
+        script.src = 'https://vk.com/js/api/xd_connection.js?2';
+        script.onload = function() {
+            // После загрузки библиотеки вызываем инициализацию
+            if (window.VKWebAppInit) {
+                window.VKWebAppInit();
+            }
+        };
+        document.head.appendChild(script);
+    })();
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Тест на оттенки</title>
