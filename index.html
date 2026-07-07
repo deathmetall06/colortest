@@ -5,33 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Тест на оттенки</title>
 
-    <!-- Инициализация VK Mini App -->
-    <script type="text/javascript">
-        (function() {
-            // Функция инициализации
-            function initVK() {
-                if (window.VKWebAppInit) {
-                    window.VKWebAppInit();
-                    console.log('VK Mini App initialized');
-                } else {
-                    console.warn('VK Bridge not available, running in standalone mode');
-                }
-            }
+    <!-- Подключение VK Bridge через CDN -->
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js">
+    </script>
 
-            // Проверяем, загружена ли уже библиотека
-            if (window.VKWebAppInit) {
-                initVK();
+    <script>
+        // Инициализация VK Bridge после загрузки
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof vkBridge !== 'undefined') {
+                vkBridge.send('VKWebAppInit')
+                    .then(() => console.log('VK Bridge инициализирован успешно'))
+                    .catch(e => console.warn('Ошибка инициализации VK Bridge:', e));
             } else {
-                // Подгружаем библиотеку VK Bridge
-                var script = document.createElement('script');
-                script.src = 'https://vk.com/js/api/xd_connection.js?2';
-                script.onload = initVK;
-                script.onerror = function() {
-                    console.warn('Failed to load VK Bridge, running standalone');
-                };
-                document.head.appendChild(script);
+                console.warn('VK Bridge не загружен, приложение работает в обычном режиме');
             }
-        })();
+        });
     </script>
 
     <style>
@@ -253,7 +241,7 @@
             font-family: 'Georgia', serif;
         }
 
-        /* ----- Адаптация для мобильных устройств (VK чаще открывается с телефона) ----- */
+        /* ----- Адаптация для мобильных ----- */
         @media (max-width: 750px) {
             body { padding: 10px; }
             .container { padding: 15px 10px; }
@@ -387,14 +375,11 @@
         // СОСТОЯНИЕ ПРИЛОЖЕНИЯ
         // ------------------------------------------------------------
         let currentBlock = 0;
-        let step = 0;          // 0,1,2 – показ отдельных цветов, 3 – сравнение
+        let step = 0;
         let revealed = false;
         const app = document.getElementById('app');
 
-        // ------------------------------------------------------------
-        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        // ------------------------------------------------------------
-        // Звук (короткий сигнал при переходе) — работает только после жеста пользователя
+        // Звук (короткий сигнал)
         function playClickSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -408,12 +393,9 @@
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
                 osc.start(audioCtx.currentTime);
                 osc.stop(audioCtx.currentTime + 0.12);
-            } catch(e) {
-                // Если звук не поддерживается, просто игнорируем
-            }
+            } catch(e) {}
         }
 
-        // Прогресс (в процентах)
         function getProgress() {
             const totalSteps = blocks.length * 4;
             const stepIndex = currentBlock * 4 + step;
@@ -441,7 +423,6 @@
             `;
 
             if (step < 3) {
-                // ----- Одиночный цвет -----
                 const colorObj = colors[step];
                 const colorHex = colorObj.hex;
                 const colorName = colorObj.name;
@@ -467,7 +448,6 @@
                 btn.addEventListener('click', handleButtonClick);
 
             } else {
-                // ----- Сравнение трёх цветов -----
                 const itemsHtml = colors.map(c => `
                     <div class="color-compare-item" style="background-color: ${c.hex};">
                         <div class="color-name">${c.name}</div>
@@ -490,7 +470,6 @@
             }
         }
 
-        // Финальная матрица
         function showFinalGrid() {
             let matrixHtml = '';
             for (let i = 0; i < blocks.length; i += 2) {
@@ -528,7 +507,7 @@
         }
 
         // ------------------------------------------------------------
-        // ОБРАБОТЧИКИ СОБЫТИЙ
+        // ОБРАБОТЧИКИ
         // ------------------------------------------------------------
         function handleButtonClick(e) {
             const action = e.currentTarget.dataset.action;
